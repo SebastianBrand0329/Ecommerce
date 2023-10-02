@@ -1,4 +1,6 @@
 using Ecommerce.AccessData.Data;
+using Ecommerce.AccessData.Repository;
+using Ecommerce.AccessData.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +15,10 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+// Agregate Services
+builder.Services.AddScoped<IWorkContainer, WorkContainer>();
+
 
 var app = builder.Build();
 
