@@ -1,4 +1,4 @@
-using Ecommerce.Data;
+using Ecommerce.AccessData.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,7 +37,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{Area=Inventory}/{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();
