@@ -24,7 +24,7 @@ function loadDataTable() {
             "url": "/Admin/Warehouses/GetAll"
         },
         "columns": [
-            { "data": "name" , "width": "20%"},
+            { "data": "name", "width": "20%" },
             { "data": "description", "width": "40%" },
             {
                 "data": "state",
@@ -40,13 +40,40 @@ function loadDataTable() {
                 "data": "id",
                 "render": function (data) {
                     return `<div class="text-center">
-                    <a href="/Admin/Warehouses/Upsert/${data}" class="btn btn-success text-white" style="curos:pointer">
+                    <a href="/Admin/Warehouses/Upsert/${data}" class="btn btn-success text-white" style="cursor:pointer">
                     <i class="bi bi-pencil-square"></i> Edtar</a>
-                    <a onclick=Delete("/Admin/Warehouses/Delete/${data}") class="btn btn-danger text-white" style="curos:pointer">
-                    <i class="bi bi-trash3-fill"></i> Eliminar</a>
+
+                    <a onclick=Delete("/Admin/Warehouses/Delete/${data}") class="btn btn-danger text-white" style="cursor:pointer">
+                                 <i class="bi bi-trash3-fill"></i> Eliminar
+                                </a>
                     </div>`;
                 }, "width": "20%"
             }
         ]
+    });
+}
+
+function Delete(url) {
+    swal({
+        title: "¿Está seguro de Eliminar la Bodega?",
+        text: "Este registro no se podrá recuperar",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true
+    }).then((borrar) => {
+        if (borrar) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                success: function (data) {
+                    if (data.success) {
+                        toastr.success(data.message);
+                        databable.ajax.reload();
+                    } else {
+                        toastr.error(data.message);
+                    }
+                }
+            });
+        }
     });
 }

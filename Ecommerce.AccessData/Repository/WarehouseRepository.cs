@@ -19,10 +19,10 @@ namespace Ecommerce.AccessData.Repository
 
             if (item != null)
             {
-                //item.Name = warehouse.Name;
-                //item.Description = warehouse.Description;
-                //item.State = warehouse.State;
-                _context.Warehouses.Update(warehouse);   
+                item.Name = warehouse.Name;
+                item.Description = warehouse.Description;
+                item.State = warehouse.State;
+                //_context.Warehouses.Update(warehouse);   
                 _context.SaveChanges();
             }
         }
