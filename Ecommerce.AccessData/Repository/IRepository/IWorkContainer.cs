@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ecommerce.AccessData.Repository.IRepository
+﻿namespace Ecommerce.AccessData.Repository.IRepository
 {
     public interface IWorkContainer : IDisposable
     {
         IWarehouse warehouse { get; }
+
+        ICategory category { get; }
 
         Task Saved();
     }

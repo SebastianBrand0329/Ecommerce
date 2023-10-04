@@ -12,6 +12,8 @@ namespace Ecommerce.AccessData.Data
         {
         }
 
+
+        public DbSet<Category> Categories { get; set; } 
         public DbSet<Warehouse> Warehouses { get; set; }  
 
 
