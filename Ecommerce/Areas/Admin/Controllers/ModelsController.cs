@@ -66,9 +66,6 @@ namespace Ecommerce.Areas.Admin.Controllers
             return View(model);
         }
 
-
-
-
         #region
         [HttpGet]
         public async Task<IActionResult> GetAll()

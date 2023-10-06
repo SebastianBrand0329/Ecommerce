@@ -18,6 +18,8 @@ namespace Ecommerce.AccessData.Data
 
         public DbSet<Model> Models { get; set; }    
 
+        public DbSet<Product> Products { get; set; }    
+
         public DbSet<Warehouse> Warehouses { get; set; }  
 
 

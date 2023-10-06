@@ -8,7 +8,9 @@ namespace Ecommerce.AccessData.Repository
         private readonly ApplicationDbContext _context;
         public IWarehouse warehouse { get; private set; }
         public ICategory category { get; private set; }
-        public IModel model { get; private set; }   
+        public IModel model { get; private set; } 
+        
+        public IProduct product { get; private set; }
 
         public WorkContainer(ApplicationDbContext context)
         {
@@ -16,6 +18,7 @@ namespace Ecommerce.AccessData.Repository
             warehouse = new WarehouseRepository(_context);
             category = new CategoryRepository(_context);    
             model = new ModelRepository(_context);  
+            product = new ProductRepository(_context);  
         }
 
 

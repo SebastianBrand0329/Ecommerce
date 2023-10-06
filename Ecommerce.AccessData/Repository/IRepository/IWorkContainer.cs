@@ -8,6 +8,8 @@
 
         IModel  model { get; }  
 
+        IProduct product { get; }
+
         Task Saved();
     }
 }
