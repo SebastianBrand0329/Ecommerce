@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Models;
+using Ecommerce.Utilities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -14,6 +15,9 @@ namespace Ecommerce.AccessData.Data
 
 
         public DbSet<Category> Categories { get; set; } 
+
+        public DbSet<Model> Models { get; set; }    
+
         public DbSet<Warehouse> Warehouses { get; set; }  
 
 

@@ -6,6 +6,8 @@
 
         ICategory category { get; }
 
+        IModel  model { get; }  
+
         Task Saved();
     }
 }
