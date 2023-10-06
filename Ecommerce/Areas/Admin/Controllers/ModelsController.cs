@@ -89,7 +89,7 @@ namespace Ecommerce.Areas.Admin.Controllers
 
             _workContainer.model.Remove(item);
             await _workContainer.Saved();
-            return Json(new { success = false, message = "Modelo eliminado exitosamente" });
+            return Json(new { success = true, message = "Modelo eliminado exitosamente" });
         }
 
 
