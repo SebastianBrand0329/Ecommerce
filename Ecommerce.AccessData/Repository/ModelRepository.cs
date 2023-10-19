@@ -16,7 +16,7 @@ namespace Ecommerce.AccessData.Repository
 
         public void Update(Model model)
         {
-            var item = _context.Categories.FirstOrDefault(m => m.Id == model.Id);
+            var item = _context.Models.FirstOrDefault(m => m.Id == model.Id);
 
             if (item != null)
             {
