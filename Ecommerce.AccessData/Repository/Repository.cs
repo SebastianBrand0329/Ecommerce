@@ -1,5 +1,6 @@
 ﻿using Ecommerce.AccessData.Data;
 using Ecommerce.AccessData.Repository.IRepository;
+using Ecommerce.Models.Specifications;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -50,6 +51,32 @@ namespace Ecommerce.AccessData.Repository
             }
 
             return await query.ToListAsync();
+        }
+
+        public PagedList<T> GetAllPaginated(Parameter parameter, Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string includeProperties = null, bool isTracking = true)
+        {
+            IQueryable<T> query = dbSet;
+            if (filter != null)
+            {
+                query = query.Where(filter);    //Select * from where....
+            }
+            if (includeProperties != null)
+            {
+                foreach (var item in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(item); //Example "Category, Brand"
+                }
+            }
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+            if (!isTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return PagedList<T>.ToPagedList(query, parameter.PageNumber, parameter.PageSize);
         }
 
         public async Task<T> GetFirst(Expression<Func<T, bool>> filter = null, string includeProperties = null, bool isTracking = true)
