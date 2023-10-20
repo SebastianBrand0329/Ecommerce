@@ -1,5 +1,4 @@
 ﻿using Ecommerce.Models;
-using Ecommerce.Utilities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -14,13 +13,15 @@ namespace Ecommerce.AccessData.Data
         }
 
 
-        public DbSet<Category> Categories { get; set; } 
+        public DbSet<Category> Categories { get; set; }
 
-        public DbSet<Model> Models { get; set; }    
+        public DbSet<Model> Models { get; set; }
 
-        public DbSet<Product> Products { get; set; }    
+        public DbSet<Product> Products { get; set; }
 
-        public DbSet<Warehouse> Warehouses { get; set; }  
+        public DbSet<User> User { get; set; }
+
+        public DbSet<Warehouse> Warehouses { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
