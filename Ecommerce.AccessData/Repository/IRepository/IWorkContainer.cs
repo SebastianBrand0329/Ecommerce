@@ -10,6 +10,8 @@
 
         IProduct product { get; }
 
+        IUser user { get; }
+
         Task Saved();
     }
 }

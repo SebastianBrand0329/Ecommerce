@@ -6,11 +6,16 @@ namespace Ecommerce.AccessData.Repository
     public class WorkContainer : IWorkContainer
     {
         private readonly ApplicationDbContext _context;
+
         public IWarehouse warehouse { get; private set; }
+
         public ICategory category { get; private set; }
+
         public IModel model { get; private set; } 
         
         public IProduct product { get; private set; }
+
+        public IUser user { get; private set; } 
 
         public WorkContainer(ApplicationDbContext context)
         {
@@ -19,8 +24,8 @@ namespace Ecommerce.AccessData.Repository
             category = new CategoryRepository(_context);    
             model = new ModelRepository(_context);  
             product = new ProductRepository(_context);  
+            user = new UserRepository(_context);
         }
-
 
         public void Dispose()
         {
