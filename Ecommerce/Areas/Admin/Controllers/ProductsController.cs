@@ -2,11 +2,14 @@
 using Ecommerce.Models;
 using Ecommerce.Models.ViewModels;
 using Ecommerce.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace Ecommerce.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = Ds.Role_Admin + "," + Ds.Role_Inventory)]
     public class ProductsController : Controller
     {
         private readonly IWorkContainer _workContainer;

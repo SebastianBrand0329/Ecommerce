@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Ecommerce.Utilities
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -19,7 +20,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/image/icono.png" width="50px;"/></a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/image/icono.png" width="50px;" /></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -32,23 +33,32 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Contenido</a>
+                        @if (User.IsInRole(Ds.Role_Admin) || User.IsInRole(Ds.Role_Inventory))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Contenido</a>
 
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Warehouses" asp-action="Index">Bodegas</a></li>
-                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Categories" asp-action="Index">Categorías</a></li>
-                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Models" asp-action="Index">Modelos</a></li>
-                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Products" asp-action="Index">Productos</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Usuario</a>
+                                <ul class="dropdown-menu">
+                                    @if (User.IsInRole(Ds.Role_Admin))
+                                    {
+                                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Warehouses" asp-action="Index">Bodegas</a></li>
+                                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Categories" asp-action="Index">Categorías</a></li>
+                                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Models" asp-action="Index">Modelos</a></li>
+                                    }
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Products" asp-action="Index">Productos</a></li>
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole(Ds.Role_Admin))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Usuario</a>
 
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Users" asp-action="Index">Usuarios</a></li>
-                            </ul>
-                        </li>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Users" asp-action="Index">Usuarios</a></li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
@@ -56,8 +66,8 @@
         </nav>
     </header>
     <div>
-        <main role="main" class="pb-3"> 
-            <partial name="_Notifications"/>
+        <main role="main" class="pb-3">
+            <partial name="_Notifications" />
             @RenderBody()
         </main>
     </div>
@@ -72,7 +82,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> 
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

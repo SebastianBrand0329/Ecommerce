@@ -1,12 +1,15 @@
 ﻿using Ecommerce.AccessData.Repository.IRepository;
 using Ecommerce.Models;
 using Ecommerce.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using System.Data;
 
 namespace Ecommerce.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = Ds.Role_Admin)]
     public class CategoriesController : Controller
     {
         private readonly IWorkContainer _workContainer;

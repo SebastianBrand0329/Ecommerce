@@ -1,11 +1,14 @@
 ﻿using Ecommerce.AccessData.Repository.IRepository;
 using Ecommerce.Models;
 using Ecommerce.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace Ecommerce.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = Ds.Role_Admin)]
     public class ModelsController : Controller
     {
         private readonly IWorkContainer _workContainer;

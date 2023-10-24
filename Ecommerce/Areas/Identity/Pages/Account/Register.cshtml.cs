@@ -165,7 +165,7 @@ namespace Ecommerce.Areas.Identity.Pages.Account
                     UserName = Input.Email,
                     Email = Input.Email,
                     PhoneNumber = Input.PhoneNumber,
-                    Name = Input.Name,  
+                    Name = Input.Name,
                     LastName = Input.LastName,
                     Address = Input.Address,
                     City = Input.City,
@@ -180,7 +180,7 @@ namespace Ecommerce.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    if(!await _roleManager.RoleExistsAsync(Ds.Role_Admin))
+                    if (!await _roleManager.RoleExistsAsync(Ds.Role_Admin))
                     {
                         await _roleManager.CreateAsync(new IdentityRole(Ds.Role_Admin));
                     }
@@ -200,7 +200,7 @@ namespace Ecommerce.Areas.Identity.Pages.Account
                     else
                     {
                         await _userManager.AddToRoleAsync(user, user.Role);
-                    }   
+                    }
 
                     _logger.LogInformation("User created a new account with password.");
 
@@ -235,6 +235,17 @@ namespace Ecommerce.Areas.Identity.Pages.Account
 
                     }
                 }
+
+                Input = new InputModel()
+                {
+                    RoleList = _roleManager.Roles.Where(r => r.Name != Ds.Role_Admin).Select(n => n.Name)
+               .Select(l => new SelectListItem
+               {
+                   Text = l,
+                   Value = l
+               })
+                };
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);

@@ -10,8 +10,8 @@
 
         public const string Role_Admin = "Admin";
 
-        public const string Role_Client = "Cliente";
+        public const string Role_Client = "Client";
 
-        public const string Role_Inventory = "Inventario";
+        public const string Role_Inventory = "Inventory";
     }
 }
