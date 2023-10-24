@@ -1,7 +1,9 @@
 using Ecommerce.AccessData.Data;
 using Ecommerce.AccessData.Repository;
 using Ecommerce.AccessData.Repository.IRepository;
+using Ecommerce.Utilities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,13 +14,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
 // Agregate Services
 builder.Services.AddScoped<IWorkContainer, WorkContainer>();
 
+builder.Services.AddRazorPages();
+
+builder.Services.AddSingleton<IEmailSender, EmailSender>();
 
 var app = builder.Build();
 

@@ -10,12 +10,15 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using Ecommerce.Models;
+using Ecommerce.Utilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
@@ -29,13 +32,15 @@ namespace Ecommerce.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -43,6 +48,7 @@ namespace Ecommerce.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -124,12 +130,25 @@ namespace Ecommerce.Areas.Identity.Pages.Account
             [MaxLength(80)]
             [Required(ErrorMessage = "El campo {0} es requerido")]
             public string Country { get; set; }
+
+            public string Role { get; set; }
+
+            public IEnumerable<SelectListItem> RoleList { get; set; }
         }
 
 
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
+            Input = new InputModel()
+            {
+                RoleList = _roleManager.Roles.Where(r => r.Name != Ds.Role_Admin).Select(n => n.Name)
+                .Select(l => new SelectListItem
+                {
+                    Text = l,
+                    Value = l
+                })
+            };
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
@@ -139,7 +158,21 @@ namespace Ecommerce.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = CreateUser();
+                //var user = CreateUser();
+
+                var user = new User
+                {
+                    UserName = Input.Email,
+                    Email = Input.Email,
+                    PhoneNumber = Input.PhoneNumber,
+                    Name = Input.Name,  
+                    LastName = Input.LastName,
+                    Address = Input.Address,
+                    City = Input.City,
+                    Country = Input.Country,
+                    Role = Input.Role
+
+                };
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -147,19 +180,41 @@ namespace Ecommerce.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    if(!await _roleManager.RoleExistsAsync(Ds.Role_Admin))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(Ds.Role_Admin));
+                    }
+                    if (!await _roleManager.RoleExistsAsync(Ds.Role_Client))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(Ds.Role_Client));
+                    }
+                    if (!await _roleManager.RoleExistsAsync(Ds.Role_Inventory))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(Ds.Role_Inventory));
+                    }
+
+                    if (user.Role == null) // User type client send from page 
+                    {
+                        await _userManager.AddToRoleAsync(user, Ds.Role_Client);
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, user.Role);
+                    }   
+
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
+                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    //var callbackUrl = Url.Page(
+                    //    "/Account/ConfirmEmail",
+                    //    pageHandler: null,
+                    //    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                    //    protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                    //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -167,8 +222,17 @@ namespace Ecommerce.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        if (user.Role == null)
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            return LocalRedirect(returnUrl);
+                        }
+                        else
+                        {
+                            //New User created for administrator
+                            return RedirectToAction("Index", "Users", new { Area = "Admin" });
+                        }
+
                     }
                 }
                 foreach (var error in result.Errors)

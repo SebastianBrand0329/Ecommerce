@@ -7,5 +7,11 @@
         public const string Error = "Error";
 
         public const string RouteImage = @"\Image\Product\";
+
+        public const string Role_Admin = "Admin";
+
+        public const string Role_Client = "Cliente";
+
+        public const string Role_Inventory = "Inventario";
     }
 }
