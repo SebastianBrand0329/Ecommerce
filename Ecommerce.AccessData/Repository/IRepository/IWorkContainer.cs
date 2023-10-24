@@ -6,9 +6,17 @@
 
         ICategory category { get; }
 
+        IInventory inventory { get; }
+
+        IInventoryDetails inventoryDetails { get; }
+
+        IKardexInventory kardexInventory { get; }
+
         IModel  model { get; }  
 
         IProduct product { get; }
+
+        IProductWarehouse productWarehouse { get; }
 
         IUser user { get; }
 

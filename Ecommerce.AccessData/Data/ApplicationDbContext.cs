@@ -21,6 +21,14 @@ namespace Ecommerce.AccessData.Data
 
         public DbSet<User> User { get; set; }
 
+        public DbSet<Inventory> Inventories { get; set; }   
+
+        public DbSet<InventoryDetails> InventoryDetails { get; set; }
+
+        public DbSet<KardexInventory> KardexInventories { get; set; }   
+
+        public DbSet<ProductWarehouse> ProductWarehouses { get; set; }
+
         public DbSet<Warehouse> Warehouses { get; set; }
 
 

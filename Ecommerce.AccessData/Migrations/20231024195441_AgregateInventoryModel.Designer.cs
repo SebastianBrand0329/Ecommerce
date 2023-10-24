@@ -4,6 +4,7 @@ using Ecommerce.AccessData.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ecommerce.AccessData.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231024195441_AgregateInventoryModel")]
+    partial class AgregateInventoryModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,86 +82,6 @@ namespace Ecommerce.AccessData.Migrations
                     b.HasIndex("WarehouseId");
 
                     b.ToTable("Inventories");
-                });
-
-            modelBuilder.Entity("Ecommerce.Models.InventoryDetails", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("InventoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Stock")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StockPrevious")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InventoryId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("InventoryDetails");
-                });
-
-            modelBuilder.Entity("Ecommerce.Models.KardexInventory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<double>("Cost")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("DateRegister")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Detail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProductWarehouseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Stock")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StockPrevious")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Total")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductWarehouseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("KardexInventories");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.Model", b =>
@@ -539,44 +462,6 @@ namespace Ecommerce.AccessData.Migrations
                     b.Navigation("User");
 
                     b.Navigation("Warehouse");
-                });
-
-            modelBuilder.Entity("Ecommerce.Models.InventoryDetails", b =>
-                {
-                    b.HasOne("Ecommerce.Models.Inventory", "Inventory")
-                        .WithMany()
-                        .HasForeignKey("InventoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Ecommerce.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Inventory");
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("Ecommerce.Models.KardexInventory", b =>
-                {
-                    b.HasOne("Ecommerce.Models.ProductWarehouse", "ProductWarehouse")
-                        .WithMany()
-                        .HasForeignKey("ProductWarehouseId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Ecommerce.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("ProductWarehouse");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.Product", b =>

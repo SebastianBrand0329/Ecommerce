@@ -11,9 +11,17 @@ namespace Ecommerce.AccessData.Repository
 
         public ICategory category { get; private set; }
 
+        public IInventory inventory { get; private set; }  
+        
+        public IInventoryDetails inventoryDetails { get; private set; }
+
+        public IKardexInventory kardexInventory { get; private set; }    
+
         public IModel model { get; private set; } 
         
         public IProduct product { get; private set; }
+
+        public IProductWarehouse productWarehouse { get; private set; } 
 
         public IUser user { get; private set; } 
 
@@ -25,6 +33,10 @@ namespace Ecommerce.AccessData.Repository
             model = new ModelRepository(_context);  
             product = new ProductRepository(_context);  
             user = new UserRepository(_context);
+            productWarehouse = new ProductWarehouseRepository(_context);
+            inventory = new InventoryRepository(_context);
+            inventoryDetails = new InventoryDetailsRepository(_context);
+            kardexInventory = new KardexInventoryRepository(_context);  
         }
 
         public void Dispose()
