@@ -31,7 +31,6 @@
         <div class="row mb-2">
             <div class="form-group col-md-6 mb-2">
                 <select class="form-select" id="productId" name="productId">
-
                 </select>
             </div>
             <div class="form-group col-md-2 mb-2">
@@ -75,11 +74,30 @@
                     <td>
                         @Html.DisplayFor(d => item.Stock)
                     </td>
-                    <td></td>
+                    <td>
+                        <a class="btn btn-primary text-white" asp-action="addAmount" asp-route-id="@item.Id">
+                            <i class="bi bi-file-plus-fill"></i>
+
+                        </a>
+
+                        <a class="btn btn-primary text-white" asp-action="subtractAmount" asp-route-id="@item.Id">
+                            <i class="bi bi-file-minus-fill"></i>
+
+                        </a>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
+
+    @if (Model.ListInventoryDetails.Count() > 0)
+    {
+        <div class="align-content-lg-center">
+            <div class="col-2">
+                <a asp-action="GenerateStock" class="btn btn-warning form-control" asp-route-id="@Model.Inventory.Id">Generar Stock</a>
+                </div>
+        </div>
+    }
 
 </div>
 
@@ -117,7 +135,20 @@
     </script>
 
     <script>
-        $("#btnAgregate")
+        $("#btnAgregate").click(function () {
+            let quantity = document.getElementById("quantityId").value;
+            let product = document.getElementById("productId").value;
+
+            if (quantity.toString() == '' || quantity < 1) {
+                swal("Error", "Ingrese una Cantidad Correcta", "error");
+                return false;
+            }
+
+            if (product.toString() == '') {
+                swal("Error", "Seleccione un Nuevo Producto", "error");
+                return false;
+            }
+        });
     </script>
 
 }

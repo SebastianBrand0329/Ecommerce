@@ -120,6 +120,41 @@ namespace Ecommerce.Areas.Inventory.Controllers
             return RedirectToAction("InventoryDetails", new { id = InventoryId });
         }
 
+        public async Task<IActionResult>addAmount(int id)// id of detail
+        {
+            InventoryVM = new InventoryVM();
+
+            var detail = await _workContainer.inventoryDetails.Get(id);
+            InventoryVM.Inventory = await _workContainer.inventory.Get(detail.Id);
+
+            detail.Stock += 1;
+            await _workContainer.Saved();
+
+            return RedirectToAction("InventoryDetails", new { id = detail.InventoryId });
+        }
+
+        public async Task<IActionResult> subtractAmount(int id)// id of detail
+        {
+            InventoryVM = new InventoryVM();
+
+            var detail = await _workContainer.inventoryDetails.Get(id);
+            InventoryVM.Inventory = await _workContainer.inventory.Get(detail.Id);
+
+            if (detail.Stock == 1)
+            {
+                _workContainer.inventoryDetails.Remove(detail);
+                await _workContainer.Saved();
+
+            }
+            else
+            {
+                detail.Stock -= 1;
+                await _workContainer.Saved();
+            }
+
+            return RedirectToAction("InventoryDetails", new { id = detail.InventoryId });
+        }
+
 
         #region
         [HttpGet]
