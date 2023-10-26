@@ -1,0 +1,123 @@
+﻿@model Ecommerce.Models.ViewModels.InventoryVM
+@{
+    ViewData["Title"] = "InventoryDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container p-2">
+    <div class="card-header bg-dark text-light m-lg-0 row container">
+        <div class="col-6">
+            Agregar Detalle Inventario
+        </div>
+        <div class="col-6 text-end">
+            <a asp-action="Index" class="btn btn-primary text-white" style="text-decoration:none;">Salir</a>
+        </div>
+    </div>
+
+
+    <form method="post" class="p-2">
+        <input asp-for="Inventory.Id" id="inventoryId" name="InventoryId" hidden />
+        <div class="form-group mb-4">
+            <label>Bodega</label>
+            <input asp-for="Inventory.Warehouse.Name" class="form-control" disabled />
+        </div>
+
+        <div class="row mb-2">
+            <div class="form-group col-md-3">
+                <label class="text-primary">Agregar Detalle</label>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="form-group col-md-6 mb-2">
+                <select class="form-select" id="productId" name="productId">
+
+                </select>
+            </div>
+            <div class="form-group col-md-2 mb-2">
+                <input class="form-control text-end" placeholder="Cantidad" type="number" min="1" id="quantityId" name="quantityId" />
+            </div>
+            <div class="form-group col-md-2 mb-2">
+                <button type="submit" class="btn btn-primary" onfocus="false" id="btnAgregate">
+                    Agregar
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-striped border">
+        <thead class="thead-dark">
+            <tr class="table-secondary thead-dark">
+                <th>Producto</th>
+                <th>Marca</th>
+                <th>Costo</th>
+                <th>Stock</th>
+                <th>Cantidad</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ListInventoryDetails)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(d => item.Product.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(d => item.Product.Model.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(d => item.Product.Cost)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(d => item.StockPrevious)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(d => item.Stock)
+                    </td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+@section Scripts {
+
+    <script>
+        // Select 2
+        $("#productId").select2({
+            placeholder: "Seleccionar Producto",
+            allowClear: true,
+            theme: "bootstrap-5",
+            ajax: {
+                url: "/Inventory/Inventories/SearchProduct",
+                contentType: "application/json; charset=utf-8",
+                data: function (params) {
+                    var query =
+                    {
+                        term: params.term
+                    };
+                    return query;
+                },
+                processResults: function (result) {
+                    return {
+                        results: $.map(result, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.serialNumber + ' ' + item.description
+                            };
+                        })
+                    };
+                }
+            }
+        });
+
+    </script>
+
+    <script>
+        $("#btnAgregate")
+    </script>
+
+}

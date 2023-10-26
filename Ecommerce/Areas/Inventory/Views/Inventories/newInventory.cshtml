@@ -5,5 +5,40 @@
     var title = "Crear Nuevo Inventario";
 }
 
-<h1>newInventory</h1>
+
+<form method="post">
+    <div style="padding-left:15%; padding-right:15%; padding-bottom:0.5rem;">
+        <div class="row border-0">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+        <input asp-for="Inventory.State" hidden/>
+        <input  asp-for="Inventory.UserId" hidden/>
+        <input  asp-for="Inventory.DateInitial" hidden/>
+        <input asp-for="Inventory.DateEnd" hidden />
+
+        <div class="col-12 border-bottom p-0">
+            <h2 class="text-primary">@title</h2>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <label>Bodega</label>
+                <select asp-for="Inventory.WarehouseId" asp-items="@Model.listWarehouse" class="form-select"> 
+                    <option disabled selected>--Seleccione una Bodega--</option>
+                </select>
+                <span asp-validation-for="Inventory.WarehouseId" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-block">
+            <button type="submit" class="btn btn-primary">Continuar</button>
+            <a class="btn btn-success" asp-action="Index">Salir</a>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial"/>
+}
 

@@ -8,7 +8,7 @@ namespace Ecommerce.Models.ViewModels
 
         public InventoryDetails InventoryDetails { get; set; }
 
-        public List<InventoryDetails> ListInventoryDetails { get; set; }
+        public IEnumerable<InventoryDetails> ListInventoryDetails { get; set; }
 
         public IEnumerable<SelectListItem> listWarehouse { get; set; }
     }

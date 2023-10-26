@@ -20,7 +20,8 @@ namespace Ecommerce.Models
         [Required]
         public DateTime DateEnd { get; set; }
 
-        [Required]
+        [Display(Name ="Bodega")]
+        [Required(ErrorMessage ="El campo {0} es obligatorio")]
         public int WarehouseId { get; set; }
 
         [ForeignKey("WarehouseId")]
