@@ -4,6 +4,7 @@ using Ecommerce.Models.ViewModels;
 using Ecommerce.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Operations;
 using NuGet.Versioning;
 using System.Security.Claims;
 
@@ -39,11 +40,13 @@ namespace Ecommerce.Areas.Inventory.Controllers
             };
 
             InventoryVM.Inventory.State = false;
-           
+
             //Get Id User from session
 
             var claimIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            //Finish Get User
             InventoryVM.Inventory.UserId = claim.Value;
             InventoryVM.Inventory.DateInitial = DateTime.Now;
             InventoryVM.Inventory.DateEnd = DateTime.Now;
@@ -66,7 +69,7 @@ namespace Ecommerce.Areas.Inventory.Controllers
             }
             inventoryVM.listWarehouse = _workContainer.inventory.GetAllDropdownList("Warehouse");
 
-            return View(inventoryVM);   
+            return View(inventoryVM);
         }
 
         public async Task<IActionResult> InventoryDetails(int id)
@@ -82,9 +85,9 @@ namespace Ecommerce.Areas.Inventory.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult>InventoryDetails(int InventoryId, int productId, int quantityId)
+        public async Task<IActionResult> InventoryDetails(int InventoryId, int productId, int quantityId)
         {
-             InventoryVM = new InventoryVM();
+            InventoryVM = new InventoryVM();
             InventoryVM.Inventory = await _workContainer.inventory.GetFirst(i => i.Id == InventoryId);
 
             var item = await _workContainer.productWarehouse.GetFirst(w => w.ProductId == productId &&
@@ -92,13 +95,13 @@ namespace Ecommerce.Areas.Inventory.Controllers
 
             var detail = await _workContainer.inventoryDetails.GetFirst(d => d.InventoryId == InventoryId && d.ProductId == productId);
 
-            if(detail == null)
+            if (detail == null)
             {
                 InventoryVM.InventoryDetails = new InventoryDetails();
                 InventoryVM.InventoryDetails.ProductId = productId;
-                InventoryVM.InventoryDetails.InventoryId = InventoryId;  
+                InventoryVM.InventoryDetails.InventoryId = InventoryId;
 
-                if(item != null)
+                if (item != null)
                 {
                     InventoryVM.InventoryDetails.StockPrevious = item.Stock;
                 }
@@ -120,7 +123,7 @@ namespace Ecommerce.Areas.Inventory.Controllers
             return RedirectToAction("InventoryDetails", new { id = InventoryId });
         }
 
-        public async Task<IActionResult>addAmount(int id)// id of detail
+        public async Task<IActionResult> addAmount(int id)// id of detail
         {
             InventoryVM = new InventoryVM();
 
@@ -156,6 +159,86 @@ namespace Ecommerce.Areas.Inventory.Controllers
         }
 
 
+        public async Task<IActionResult> GenerateStock(int id)
+        {
+            var inventory = await _workContainer.inventory.Get(id);
+
+            var detailList = await _workContainer.inventoryDetails.GetAll(d => d.InventoryId == id);
+
+            //Get Id User from session
+
+            var claimIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            //Finish Get User
+
+            foreach (var item in detailList)
+            {
+                var product = new ProductWarehouse();
+                product = await _workContainer.productWarehouse.GetFirst(p => p.ProductId == item.ProductId &&
+                                                                         p.WarehouseId == inventory.WarehouseId);
+
+                if (product != null) // Inventory exists in BD, update quantity
+                {
+                    await _workContainer.kardexInventory.RegisterKardex(product.Id, "Entrada", "Registro de Inventario",
+                                                                        product.Stock, item.Stock, claim.Value);
+                    product.Stock += item.Stock;
+                    await _workContainer.Saved();
+                }
+                else
+                {
+                    // Inventory not exist in bd, cretae 
+                    product = new ProductWarehouse();
+                    product.WarehouseId = inventory.WarehouseId;
+                    product.ProductId = item.ProductId;
+                    product.Stock = item.Stock;
+                    await _workContainer.productWarehouse.Add(product);
+                    await _workContainer.Saved();
+                    await _workContainer.kardexInventory.RegisterKardex(product.Id, "Salida", "Inventario Inicial",
+                                                    0, item.Stock, claim.Value);
+                }
+
+            }
+
+            //Update 
+            inventory.State = true;
+            inventory.DateEnd = DateTime.Now;
+            await _workContainer.Saved();
+
+            TempData[Ds.Successful] = "Stock Generado Con Exito";
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult KardexProduct()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult KardexProduct(string fechaInicioId, string fechaFinalId, int productoId)
+        {
+            return RedirectToAction("KardexProductResult", new { fechaInicioId, fechaFinalId, productoId });
+        }
+
+        public async Task<IActionResult> KardexProductResult(string fechaInicioId, string fechaFinalId, int productoId)
+        {
+            KardexInventoryVM kardexInventoryVM = new KardexInventoryVM();
+            kardexInventoryVM.Product = new Product();
+            kardexInventoryVM.Product = await _workContainer.product.Get(productoId);
+
+            kardexInventoryVM.DateInitial = DateTime.Parse(fechaInicioId);
+            kardexInventoryVM.DateEnd = DateTime.Parse(fechaFinalId).AddHours(23).AddMinutes(59);
+
+            kardexInventoryVM.ListKardexInventory = await _workContainer.kardexInventory.GetAll(
+                                                          k => k.ProductWarehouse.ProductId == productoId &&
+                                                         (k.DateRegister >= kardexInventoryVM.DateInitial &&
+                                                           k.DateRegister <= kardexInventoryVM.DateEnd),includeProperties:"ProductWarehouse,ProductWarehouse.Product,ProductWarehouse.Warehouse",
+                                                           orderBy: o => o.OrderBy(o => o.DateRegister));
+            return View(kardexInventoryVM);
+        }
+
         #region
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -167,12 +250,12 @@ namespace Ecommerce.Areas.Inventory.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult>SearchProduct(string term)
+        public async Task<IActionResult> SearchProduct(string term)
         {
             if (!string.IsNullOrEmpty(term))
             {
                 var items = await _workContainer.product.GetAll(p => p.State == true);
-                var data = items.Where(x => x.serialNumber.Contains(term, StringComparison.OrdinalIgnoreCase) || 
+                var data = items.Where(x => x.serialNumber.Contains(term, StringComparison.OrdinalIgnoreCase) ||
                                        x.Description.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList();
 
                 return Ok(data);
