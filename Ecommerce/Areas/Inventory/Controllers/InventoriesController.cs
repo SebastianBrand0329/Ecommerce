@@ -159,56 +159,98 @@ namespace Ecommerce.Areas.Inventory.Controllers
         }
 
 
+        //public async Task<IActionResult> GenerateStock(int Id)
+        //{
+        //    var inventory = await _workContainer.inventory.Get(Id);
+
+        //    var detailList = await _workContainer.inventoryDetails.GetAll(d => d.InventoryId == Id);
+
+        //    //Get Id User from session
+
+        //    var claimIdentity = (ClaimsIdentity)User.Identity;
+        //    var claim = claimIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+        //    //Finish Get User
+
+        //    foreach (var item in detailList)
+        //    {
+        //        var productWarehouse = new ProductWarehouse();
+        //        productWarehouse = await _workContainer.productWarehouse.GetFirst(p => p.ProductId == item.ProductId &&
+        //                                                                 p.WarehouseId == inventory.WarehouseId);
+
+        //        if (productWarehouse != null) // Inventory exists in BD, update quantity
+        //        {
+        //            await _workContainer.kardexInventory.RegisterKardex(productWarehouse.Id, "Entrada", "Registro de Inventario",
+        //                                                                         productWarehouse.Stock, item.Stock, claim.Value);
+        //            productWarehouse.Stock += item.Stock;
+        //            await _workContainer.Saved();
+        //        }
+        //        else
+        //        {
+        //            // Inventory not exist in bd, cretae 
+        //            productWarehouse = new ProductWarehouse();
+        //            productWarehouse.WarehouseId = inventory.WarehouseId;
+        //            productWarehouse.ProductId = item.ProductId;
+        //            productWarehouse.Stock = item.Stock;
+        //            await _workContainer.productWarehouse.Add(productWarehouse);
+        //            await _workContainer.Saved();
+        //            await _workContainer.kardexInventory.RegisterKardex(productWarehouse.Id, "Salida", "Inventario Inicial",
+        //                                            0, item.Stock, claim.Value);
+        //        }
+
+        //    }
+
+        //    //Update 
+        //    inventory.State = true;
+        //    inventory.DateEnd = DateTime.Now;
+        //    await _workContainer.Saved();
+
+        //    TempData[Ds.Successful] = "Stock Generado Con Exito";
+
+        //    return RedirectToAction("Index");
+        //}
+
         public async Task<IActionResult> GenerateStock(int id)
         {
             var inventory = await _workContainer.inventory.Get(id);
-
             var detailList = await _workContainer.inventoryDetails.GetAll(d => d.InventoryId == id);
-
-            //Get Id User from session
-
+            // Obtener el Id del Usuario desde la sesion
             var claimIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
-            //Finish Get User
-
             foreach (var item in detailList)
             {
-                var product = new ProductWarehouse();
-                product = await _workContainer.productWarehouse.GetFirst(p => p.ProductId == item.ProductId &&
-                                                                         p.WarehouseId == inventory.WarehouseId);
+                var productWarehouse = new ProductWarehouse();
+                productWarehouse = await _workContainer.productWarehouse.GetFirst(b => b.ProductId == item.ProductId && b.WarehouseId == inventory.WarehouseId);
+                if (productWarehouse != null) //  El registro de Stock existe, hay que actualizar las cantidades
+                {
+                    await _workContainer.kardexInventory.RegisterKardex(productWarehouse.Id, "Entrada", "Registro de Inventario",
+                                                                          productWarehouse.Stock, item.Stock, claim.Value);
+                    productWarehouse.Stock += item.Stock;
+                    await _workContainer.Saved();
 
-                if (product != null) // Inventory exists in BD, update quantity
-                {
-                    await _workContainer.kardexInventory.RegisterKardex(product.Id, "Entrada", "Registro de Inventario",
-                                                                        product.Stock, item.Stock, claim.Value);
-                    product.Stock += item.Stock;
-                    await _workContainer.Saved();
                 }
-                else
+                else  // Registro de Stock no existe, hay que crearlo
                 {
-                    // Inventory not exist in bd, cretae 
-                    product = new ProductWarehouse();
-                    product.WarehouseId = inventory.WarehouseId;
-                    product.ProductId = item.ProductId;
-                    product.Stock = item.Stock;
-                    await _workContainer.productWarehouse.Add(product);
+                    productWarehouse = new ProductWarehouse();
+                    productWarehouse.WarehouseId = inventory.WarehouseId;
+                    productWarehouse.ProductId = item.ProductId;
+                    productWarehouse.Stock = item.Stock;
+                    await _workContainer.productWarehouse.Add(productWarehouse);
                     await _workContainer.Saved();
-                    await _workContainer.kardexInventory.RegisterKardex(product.Id, "Salida", "Inventario Inicial",
-                                                    0, item.Stock, claim.Value);
+                    await _workContainer.kardexInventory.RegisterKardex(productWarehouse.Id, "Entrada", "Inventario Inicial", 0, item.Stock, claim.Value);
                 }
 
             }
-
-            //Update 
+            // Actualizar la Cabecera de Inventario
             inventory.State = true;
-            inventory.DateEnd = DateTime.Now;
+            inventory.DateInitial = DateTime.Now;
             await _workContainer.Saved();
-
-            TempData[Ds.Successful] = "Stock Generado Con Exito";
-
+            TempData[Ds.Successful] = "Stock Generado con Exito";
             return RedirectToAction("Index");
+
         }
+
 
         public IActionResult KardexProduct()
         {
@@ -231,11 +273,10 @@ namespace Ecommerce.Areas.Inventory.Controllers
             kardexInventoryVM.DateInitial = DateTime.Parse(fechaInicioId);
             kardexInventoryVM.DateEnd = DateTime.Parse(fechaFinalId).AddHours(23).AddMinutes(59);
 
-            kardexInventoryVM.ListKardexInventory = await _workContainer.kardexInventory.GetAll(
-                                                          k => k.ProductWarehouse.ProductId == productoId &&
-                                                         (k.DateRegister >= kardexInventoryVM.DateInitial &&
-                                                           k.DateRegister <= kardexInventoryVM.DateEnd),includeProperties:"ProductWarehouse,ProductWarehouse.Product,ProductWarehouse.Warehouse",
-                                                           orderBy: o => o.OrderBy(o => o.DateRegister));
+            kardexInventoryVM.ListKardexInventory = await _workContainer.kardexInventory.GetAll(k => k.ProductWarehouse.ProductId == productoId &&(k.DateRegister >= kardexInventoryVM.DateInitial 
+                         && k.DateRegister <= kardexInventoryVM.DateEnd), 
+                         includeProperties: "ProductWarehouse,ProductWarehouse.Product,ProductWarehouse.Warehouse",
+                        orderBy: o => o.OrderBy(o => o.DateRegister));
             return View(kardexInventoryVM);
         }
 
