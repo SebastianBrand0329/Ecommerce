@@ -41,6 +41,8 @@ namespace Ecommerce.Models
 
         public string TransactionId { get; set; }
 
+        public string SessionId { get; set; }
+
         public string Phone { get; set; }
 
         public string Address { get; set; }
