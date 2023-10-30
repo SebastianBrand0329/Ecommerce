@@ -15,6 +15,8 @@ namespace Ecommerce.AccessData.Data
 
         public DbSet<Category> Categories { get; set; }
 
+        public DbSet<Company> Companys { get; set; }    
+
         public DbSet<Model> Models { get; set; }
 
         public DbSet<Product> Products { get; set; }
@@ -27,7 +29,13 @@ namespace Ecommerce.AccessData.Data
 
         public DbSet<KardexInventory> KardexInventories { get; set; }   
 
+        public DbSet<Order> Orders { get; set; }
+
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+
         public DbSet<ProductWarehouse> ProductWarehouses { get; set; }
+
+        public DbSet<ShoppingCar> ShoppingCars { get; set; }    
 
         public DbSet<Warehouse> Warehouses { get; set; }
 

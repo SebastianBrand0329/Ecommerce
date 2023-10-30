@@ -6,6 +6,8 @@
 
         ICategory category { get; }
 
+        ICompany company { get; }   
+
         IInventory inventory { get; }
 
         IInventoryDetails inventoryDetails { get; }
@@ -17,6 +19,12 @@
         IProduct product { get; }
 
         IProductWarehouse productWarehouse { get; }
+
+        IOrder order { get; }
+
+        IOrderDetail orderDetail { get; }
+
+        IShoppinCar shoppinCar { get; } 
 
         IUser user { get; }
 

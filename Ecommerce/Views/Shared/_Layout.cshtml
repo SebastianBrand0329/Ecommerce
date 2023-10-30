@@ -1,4 +1,6 @@
 ﻿@using Ecommerce.Utilities
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContextAccessor
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,6 +48,7 @@
                                         <li><a class="dropdown-item" asp-area="Admin" asp-controller="Warehouses" asp-action="Index">Bodegas</a></li>
                                         <li><a class="dropdown-item" asp-area="Admin" asp-controller="Categories" asp-action="Index">Categorías</a></li>
                                         <li><a class="dropdown-item" asp-area="Admin" asp-controller="Models" asp-action="Index">Modelos</a></li>
+                                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Companys" asp-action="Upsert">Compañías</a></li>
                                     }
                                     <li><a class="dropdown-item" asp-area="Admin" asp-controller="Products" asp-action="Index">Productos</a></li>
                                 </ul>
@@ -72,6 +75,27 @@
                                 </ul>
                             </li>
                         }
+
+                        @if(httpContextAccessor.HttpContext.Session.GetInt32(Ds.ssShoppingCar) != null)
+                        {
+                            <li>
+                                <a asp-area="Inventory" asp-controller="ShoppingCar" asp-action="Index" class="nav-link">
+                                    @{
+                                        var numberProduct = httpContextAccessor.HttpContext.Session.GetInt32(Ds.ssShoppingCar);
+                                    }
+                                    <i class="bi bi-cart-fill text-primary">&nbsp; (@numberProduct)</i>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a href="#" class="nav-lin">
+                                    <i class="bi bi-cart-fill text-primary">&nbsp; (0)</i>
+                                </a>
+                            </li>
+                        }
+
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

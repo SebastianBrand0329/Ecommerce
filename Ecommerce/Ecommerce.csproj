@@ -17,6 +17,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.9" />
+    <PackageReference Include="Rotativa.AspNetCore" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,7 +27,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Rotary\Windows\" />
     <Folder Include="wwwroot\Image\Product\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Rotary\Windows\wkhtmltoimage.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Rotary\Windows\wkhtmltopdf.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -13,5 +13,7 @@
         public const string Role_Client = "Client";
 
         public const string Role_Inventory = "Inventory";
+
+        public const string ssShoppingCar = "Sesión Carro Compras";
     }
 }

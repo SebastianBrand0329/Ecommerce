@@ -1,5 +1,6 @@
 ﻿using Ecommerce.AccessData.Data;
 using Ecommerce.AccessData.Repository.IRepository;
+using System.Drawing.Printing;
 
 namespace Ecommerce.AccessData.Repository
 {
@@ -10,6 +11,8 @@ namespace Ecommerce.AccessData.Repository
         public IWarehouse warehouse { get; private set; }
 
         public ICategory category { get; private set; }
+
+        public ICompany company { get; private set; }   
 
         public IInventory inventory { get; private set; }  
         
@@ -22,6 +25,12 @@ namespace Ecommerce.AccessData.Repository
         public IProduct product { get; private set; }
 
         public IProductWarehouse productWarehouse { get; private set; } 
+
+        public IOrder order { get; private set; }   
+
+        public IOrderDetail orderDetail { get; private set; }
+
+        public IShoppinCar shoppinCar { get; private set; }
 
         public IUser user { get; private set; } 
 
@@ -36,7 +45,11 @@ namespace Ecommerce.AccessData.Repository
             productWarehouse = new ProductWarehouseRepository(_context);
             inventory = new InventoryRepository(_context);
             inventoryDetails = new InventoryDetailsRepository(_context);
-            kardexInventory = new KardexInventoryRepository(_context);  
+            kardexInventory = new KardexInventoryRepository(_context);
+            company = new CompanyRepository(_context);
+            shoppinCar = new ShoppingCarRepository(_context);
+            order = new OrderRepository(_context);
+            orderDetail = new OrderDetailRepository(_context);  
         }
 
         public void Dispose()

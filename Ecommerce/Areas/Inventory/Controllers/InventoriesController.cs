@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Operations;
 using NuGet.Versioning;
+using Rotativa.AspNetCore;
 using System.Security.Claims;
 
 namespace Ecommerce.Areas.Inventory.Controllers
@@ -266,19 +267,46 @@ namespace Ecommerce.Areas.Inventory.Controllers
 
         public async Task<IActionResult> KardexProductResult(string fechaInicioId, string fechaFinalId, int productoId)
         {
-            KardexInventoryVM kardexInventoryVM = new KardexInventoryVM();
+            var kardexInventoryVM = new KardexInventoryVM();
             kardexInventoryVM.Product = new Product();
             kardexInventoryVM.Product = await _workContainer.product.Get(productoId);
 
             kardexInventoryVM.DateInitial = DateTime.Parse(fechaInicioId);
             kardexInventoryVM.DateEnd = DateTime.Parse(fechaFinalId).AddHours(23).AddMinutes(59);
 
-            kardexInventoryVM.ListKardexInventory = await _workContainer.kardexInventory.GetAll(k => k.ProductWarehouse.ProductId == productoId &&(k.DateRegister >= kardexInventoryVM.DateInitial 
-                         && k.DateRegister <= kardexInventoryVM.DateEnd), 
+            kardexInventoryVM.ListKardexInventory = await _workContainer.kardexInventory.GetAll(k => k.ProductWarehouse.ProductId == productoId && (k.DateRegister >= kardexInventoryVM.DateInitial
+                         && k.DateRegister <= kardexInventoryVM.DateEnd),
                          includeProperties: "ProductWarehouse,ProductWarehouse.Product,ProductWarehouse.Warehouse",
                         orderBy: o => o.OrderBy(o => o.DateRegister));
             return View(kardexInventoryVM);
         }
+
+        public async Task<IActionResult> PrintReport(string DateInitial, string DateEnd, int Id)
+        {
+            var kardexInventoryVM = new KardexInventoryVM();
+            kardexInventoryVM.Product = new Product();
+            kardexInventoryVM.Product = await _workContainer.product.Get(Id);
+
+            kardexInventoryVM.DateInitial =  DateTime.Parse(DateInitial);
+            kardexInventoryVM.DateEnd = DateTime.Parse(DateEnd);
+
+            kardexInventoryVM.ListKardexInventory = await _workContainer.kardexInventory.GetAll(k => k.ProductWarehouse.ProductId == Id && (k.DateRegister >= kardexInventoryVM.DateInitial
+                         && k.DateRegister <= kardexInventoryVM.DateEnd),
+                         includeProperties: "ProductWarehouse,ProductWarehouse.Product,ProductWarehouse.Warehouse",
+                        orderBy: o => o.OrderBy(o => o.DateRegister));
+
+
+            return new ViewAsPdf("PrintReport", kardexInventoryVM)
+            {
+                FileName = "KardexProduct.pdf",
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+                PageSize = Rotativa.AspNetCore.Options.Size.A4,
+                CustomSwitches = "--page-offset 0 --footer-center [page] --footer-font-size 12"
+            };
+        }
+
+
+
 
         #region
         [HttpGet]

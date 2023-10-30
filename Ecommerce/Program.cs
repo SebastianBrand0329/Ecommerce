@@ -46,6 +46,13 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true; 
+    options.Cookie.IsEssential = true;  
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -65,6 +72,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
@@ -73,5 +82,8 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{Area=Inventory}/{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+IWebHostEnvironment environment = app.Environment;
+Rotativa.AspNetCore.RotativaConfiguration.Setup(environment.WebRootPath, "..\\Rotary\\Windows\\");
 
 app.Run();
