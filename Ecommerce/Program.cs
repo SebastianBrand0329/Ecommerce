@@ -28,6 +28,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 
+// Configurations Password Required User
+
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequireDigit = false;
@@ -72,7 +74,7 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+// Configuration Api Pay Stripe
 StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
 app.UseRouting();
@@ -88,6 +90,8 @@ app.MapControllerRoute(
     pattern: "{Area=Inventory}/{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
+
+//Configuration PDF Route
 IWebHostEnvironment environment = app.Environment;
 Rotativa.AspNetCore.RotativaConfiguration.Setup(environment.WebRootPath, "..\\Rotary\\Windows\\");
 
