@@ -76,6 +76,10 @@
                             </li>
                         }
 
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="Orders" asp-action="Index">Ordenes</a>
+                        </li>
+
                         @if(httpContextAccessor.HttpContext.Session.GetInt32(Ds.ssShoppingCar) != null)
                         {
                             <li>
